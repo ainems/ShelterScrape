@@ -1,0 +1,53 @@
+from lxml import html
+import requests
+
+#############NYT SAUCE################
+page = requests.get('https://www.nytimes.com/interactive/2020/us/coronavirus-stay-at-home-order.html')
+tree = html.fromstring(page.content)
+
+#############COUNTY EXAMPLE################
+#This is how you can pull counties from locations without state-wide orders. Getting the first county would be different but counties were not a requirement so I skipped it 
+
+
+#Get county: only states with county mandates have two place-wrap DIVs, pull from second DIV
+secondCounty = tree.xpath('//div["state-wrap statewide"]/div[@class="place-wrap"][2]/p[@class="l-place"]/text()')
+
+#Get order type: only states with county mandates have two place-wrap DIVs, pull from second DIV
+secondMandate = tree.xpath('//div["state-wrap statewide"]/div[2][@class="place-wrap"]/p[@class="l-order"]/text()')
+
+#Get effective date string: only states with county mandates have two place-wrap DIVs, pull from second DIV
+secondDate = tree.xpath('//div["state-wrap statewide"]/div[2][@class="place-wrap"]/p/span[@class="l-date"]/text()')
+
+#Strip the stupid fucking commas from effective date strings so they don't f@ck my CSV
+secondD1 = [elem.strip(', effective') for elem in secondDate]
+
+#Get state: pull h3 text from place-wrap's parent DIV
+secondState = tree.xpath('//div[2][@class="place-wrap"]/parent::div/h3/text()')
+
+#Print Info
+print("second")
+print(secondState)
+print(secondCounty)
+print(secondMandate)
+print(secondD1)
+
+#############STATE ORDERS################
+#NOTE: You might want to write something that matches full state names to abbr
+
+#Get states
+states = tree.xpath('//div[@class="state-wrap statewide"]/h3/text()')
+
+#Get order type
+mandate = tree.xpath('//p[1][@class="l-order"]/text()')
+
+#Get effective date strings
+date = tree.xpath('//p[1]/span[@class="l-date"]/text()')
+
+#Strip the stupid fucking commas from effective date strings so they don't f@ck my CSV
+d1=[elem.strip(', effective') for elem in date]
+
+#Print Info
+print("first")
+print (states)
+print (mandate)
+print (d1)
