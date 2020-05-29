@@ -1,0 +1,19 @@
+from lxml import html
+import requests
+import csv
+
+###############NYT SAUCE###############
+page = requests.get('https://www.nytimes.com/interactive/2020/us/states-reopen-map-coronavirus.html')
+tree = html.fromstring(page.content)
+
+#Get state
+state = tree.xpath('//div[@class = "g-name-details-wrap"]/div/text()')
+print(state)
+
+#Get order type
+mandate = tree.xpath('//div[@class="g-inner-box"]/div[2]/span[1]/text()')
+print(mandate)
+
+#Get expiration date string
+date = tree.xpath('//span[@class = "g-date-details-text"]/text()')
+print(date)
